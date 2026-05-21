@@ -1,43 +1,75 @@
 import { useBank } from "../context/BankContext";
-import { ArrowUpRight, ArrowDownLeft } from "lucide-react";
+import { ArrowUpRight, ArrowDownLeft, CreditCard, ShoppingBag, Landmark, Film } from "lucide-react";
 
 export default function TransactionCard() {
   const { transactions } = useBank();
 
-  const formatCurrency = (amount) => {
-    const formatted = new Intl.NumberFormat('en-NG', {
-      style: 'currency',
-      currency: 'NGN',
-      minimumFractionDigits: 0
-    }).format(Math.abs(amount));
-    return amount < 0 ? `-${formatted}` : `+${formatted}`;
+  const getCategoryIcon = (category, type) => {
+    switch (category?.toLowerCase()) {
+      case "entertainment":
+        return <Film className="text-purple-400" size={18} />;
+      case "business":
+        return <Landmark className="text-emerald-400" size={18} />;
+      case "logistics":
+      case "transport":
+        return <ShoppingBag className="text-amber-400" size={18} />;
+      default:
+        return type === "Credit" ? (
+          <ArrowDownLeft className="text-green-400" size={18} />
+        ) : (
+          <ArrowUpRight className="text-blue-400" size={18} />
+        );
+    }
   };
 
-  // Slice to only show the top 3 latest entries on the dashboard view
-  const recentTransactions = transactions.slice(0, 3);
+  if (!transactions || transactions.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12 px-4 border border-dashed border-white/10 rounded-2xl bg-[#0F172A]/50">
+        <CreditCard className="text-gray-600 mb-3" size={32} />
+        <p className="text-sm text-gray-400 font-medium">No recent transactions found</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-4">
-      {recentTransactions.map((tx) => (
-        <div key={tx.id} className="flex items-center justify-between p-3 rounded-xl bg-[#070B1A]/50 border border-white/5 hover:border-white/10 transition-all">
-          <div className="flex items-center gap-3">
-            <div className={`p-2 rounded-lg ${
-              tx.amount < 0 ? 'bg-red-500/10 text-red-400' : 'bg-green-500/10 text-green-400'
-            }`}>
-              {tx.amount < 0 ? <ArrowUpRight size={18} /> : <ArrowDownLeft size={18} />}
+    <div className="space-y-3">
+      {transactions.map((tx) => {
+        const isCredit = tx.type === "Credit";
+        
+        return (
+          <div
+            key={tx.id}
+            className="flex items-center justify-between p-4 bg-[#0F172A] border border-white/5 hover:border-white/10 rounded-xl transition-all duration-200 group"
+          >
+            <div className="flex items-center gap-3.5 min-w-0">
+              <div className="p-3 bg-[#070B1A] border border-white/5 rounded-xl group-hover:scale-105 transition-transform duration-200">
+                {getCategoryIcon(tx.category, tx.type)}
+              </div>
+              <div className="min-w-0">
+                <h4 className="text-sm font-semibold text-white truncate tracking-wide">
+                  {tx.title}
+                </h4>
+                <div className="flex items-center gap-2 mt-0.5">
+                  <span className="text-[11px] text-gray-500 font-medium">{tx.date}</span>
+                  <span className="w-1 h-1 bg-white/10 rounded-full" />
+                  <span className="text-[10px] uppercase font-bold tracking-wider text-gray-400 bg-white/[0.03] px-1.5 py-0.5 rounded border border-white/5">
+                    {tx.category || "General"}
+                  </span>
+                </div>
+              </div>
             </div>
-            <div>
-              <p className="text-sm font-semibold text-white line-clamp-1">{tx.name}</p>
-              <p className="text-xs text-gray-500 mt-0.5">{tx.date}</p>
+
+            <div className="text-right pl-4">
+              <span className={`text-sm font-bold tracking-tight ${isCredit ? "text-green-400" : "text-gray-200"}`}>
+                {isCredit ? "+" : "-"}₦{Number(tx.amount).toLocaleString("en-US")}
+              </span>
+              <p className="text-[10px] text-gray-500 font-medium mt-0.5 tracking-wider uppercase">
+                {tx.type}
+              </p>
             </div>
           </div>
-          <span className={`text-sm font-bold ${
-            tx.amount < 0 ? 'text-red-400' : 'text-green-400'
-          }`}>
-            {formatCurrency(tx.amount)}
-          </span>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }

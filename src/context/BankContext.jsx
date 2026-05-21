@@ -1,35 +1,79 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useState, useEffect, useContext } from "react";
 
-const BankContext = createContext();
+// Create the Base Context
+export const BankContext = createContext();
 
 export const BankProvider = ({ children }) => {
-  const [balance, setBalance] = useState(2560000); // Numeric for math
-  const [transactions, setTransactions] = useState([
-    { id: 1, name: "Netflix Subscription", amount: -4500, date: "Today, 12:30 PM", type: "debit" },
-    { id: 2, name: "Salary Deposit", amount: 840000, date: "Yesterday", type: "credit" },
-  ]);
+  // Initial Fallback Data
+  const defaultTransactions = [
+    { id: 1, type: "Debit", title: "Netflix Subscription", amount: 4500, date: "May 20, 2026", category: "Entertainment" },
+    { id: 2, type: "Credit", title: "Invoice #4092 Payment", amount: 120000, date: "May 18, 2026", category: "Business" },
+    { id: 3, type: "Debit", title: "Fuel Station", amount: 15000, date: "May 15, 2026", category: "Logistics" }
+  ];
 
-  const performTransfer = (recipient, amount) => {
-    if (balance >= amount) {
-      setBalance((prev) => prev - amount);
-      const newTx = {
-        id: Date.now(),
-        name: `Transfer to ${recipient}`,
-        amount: -amount,
-        date: "Just now",
-        type: "debit",
-      };
-      setTransactions((prev) => [newTx, ...prev]);
-      return true;
-    }
-    return false;
+  const defaultBalances = {
+    totalBalance: 2560000,
+    income: 840000,
+    expenses: 220000,
+    savings: 1200000
+  };
+
+  // Sync State with LocalStorage
+  const [balances, setBalances] = useState(() => {
+    const savedBalances = localStorage.getItem("finbank_balances");
+    return savedBalances ? JSON.parse(savedBalances) : defaultBalances;
+  });
+
+  const [transactions, setTransactions] = useState(() => {
+    const savedTx = localStorage.getItem("finbank_transactions");
+    return savedTx ? JSON.parse(savedTx) : defaultTransactions;
+  });
+
+  useEffect(() => {
+    localStorage.setItem("finbank_balances", JSON.stringify(balances));
+  }, [balances]);
+
+  useEffect(() => {
+    localStorage.setItem("finbank_transactions", JSON.stringify(transactions));
+  }, [transactions]);
+
+  // Execute Transfers
+  const executeTransfer = (title, amount, category) => {
+    const numAmount = parseFloat(amount);
+    if (isNaN(numAmount) || numAmount <= 0) return false;
+    if (numAmount > balances.totalBalance) return false;
+
+    const newTransaction = {
+      id: Date.now(),
+      type: "Debit",
+      title: title || "General Transfer",
+      amount: numAmount,
+      date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+      category: category || "Transfer"
+    };
+
+    setTransactions((prev) => [newTransaction, ...prev]);
+    setBalances((prev) => ({
+      ...prev,
+      totalBalance: prev.totalBalance - numAmount,
+      expenses: prev.expenses + numAmount
+    }));
+
+    return true;
   };
 
   return (
-    <BankContext.Provider value={{ balance, transactions, performTransfer }}>
+    <BankContext.Provider value={{ balances, transactions, executeTransfer }}>
       {children}
     </BankContext.Provider>
   );
 };
 
-export const useBank = () => useContext(BankContext);
+// CRITICAL HOOK EXPORT: This resolves the TransactionCard.jsx import error!
+export const useBank = () => {
+  const context = useContext(BankContext);
+  if (!context) {
+    throw new Error("useBank must be used within a BankProvider");
+  }
+  return context;
+};
