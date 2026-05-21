@@ -1,10 +1,14 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { BankProvider } from "./context/BankContext";
 
-// Layout
+// Layout & Guards
 import MainLayout from "./layout/MainLayout";
+import ProtectedRoute from "./components/ProtectedRoute";
 
-// Pages
+// Authentication Pages
+import Login from "./pages/Login";
+
+// App Pages
 import Dashboard from "./pages/Dashboard";
 import Analytics from "./pages/Analytics";
 import Transactions from "./pages/Transactions";
@@ -18,22 +22,24 @@ function App() {
     <BankProvider>
       <BrowserRouter>
         <Routes>
-          {/* MainLayout acts as the parent for all authenticated pages */}
-          <Route element={<MainLayout />}>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/analytics" element={<Analytics />} />
-            <Route path="/transactions" element={<Transactions />} />
-            <Route path="/payments" element={<Payments />} />
-            <Route path="/cards" element={<Cards />} />
-            <Route path="/beneficiaries" element={<Beneficiaries />} />
-            <Route path="/settings" element={<Settings />} />
+          {/* Public Auth Routes */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<div className="text-white p-8">Registration Coming Soon</div>} />
+
+          {/* Secure App Routing Pipeline */}
+          <Route element={<ProtectedRoute />}>
+            <Route element={<MainLayout />}>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/analytics" element={<Analytics />} />
+              <Route path="/transactions" element={<Transactions />} />
+              <Route path="/payments" element={<Payments />} />
+              <Route path="/cards" element={<Cards />} />
+              <Route path="/beneficiaries" element={<Beneficiaries />} />
+              <Route path="/settings" element={<Settings />} />
+            </Route>
           </Route>
 
-          {/* 
-            Catch-all Route: 
-            If the user goes to a route that doesn't exist (like /help), 
-            redirect them to the Dashboard.
-          */}
+          {/* Catch-all Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
