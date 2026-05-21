@@ -1,10 +1,14 @@
-# 🚀 FinBank – High-Fidelity Fintech Business Dashboard
+#  FinBank – High-Fidelity Fintech Business Dashboard
 
 FinBank is a premium, pixel-perfect digital banking and business suite interface designed for modern web and mobile viewports. Built using **React (Vite)** and **Tailwind CSS**, this frontend application replicates the premium dark-mode aesthetics and fluid interactivity of top-tier financial apps like Moniepoint.
 
-Designed as a front-end showcase, it emphasizes strict responsive design architectures, advanced React routing workflows, custom context state engines, and client-side data persistence layers.
+📱 **[Live Production URL on Vercel](https://fintech-banking-dashboard-nine.vercel.app)**
 
-📱 **[Live Production URL on Vercel](https://fintech-banking-dashboard-nine.vercel.app)** 
+🔐 **Instant Demo Access Credentials:**
+* **Email:** `demo@finbank.com`
+* **Password:** `password`
+
+---
 
 ---
 
