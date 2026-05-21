@@ -16,6 +16,7 @@ import Payments from "./pages/Payments";
 import Cards from "./pages/Cards";
 import Beneficiaries from "./pages/Beneficiaries";
 import Settings from "./pages/Settings";
+import Register from "./pages/Register";
 
 function App() {
   return (
@@ -36,6 +37,9 @@ function App() {
               <Route path="/cards" element={<Cards />} />
               <Route path="/beneficiaries" element={<Beneficiaries />} />
               <Route path="/settings" element={<Settings />} />
+              {/* Public Auth Routes */}
+<Route path="/login" element={<Login />} />
+<Route path="/register" element={<Register />} />
             </Route>
           </Route>
 
