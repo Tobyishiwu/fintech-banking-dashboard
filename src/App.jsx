@@ -7,8 +7,9 @@ import ProtectedRoute from "./components/ProtectedRoute";
 
 // Authentication Pages
 import Login from "./pages/Login";
+import Register from "./pages/Register"; // Verified Import
 
-// App Pages
+// App Dashboard Pages
 import Dashboard from "./pages/Dashboard";
 import Analytics from "./pages/Analytics";
 import Transactions from "./pages/Transactions";
@@ -16,18 +17,17 @@ import Payments from "./pages/Payments";
 import Cards from "./pages/Cards";
 import Beneficiaries from "./pages/Beneficiaries";
 import Settings from "./pages/Settings";
-import Register from "./pages/Register";
 
 function App() {
   return (
     <BankProvider>
       <BrowserRouter>
         <Routes>
-          {/* Public Auth Routes */}
+          {/* Public Auth Views */}
           <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<div className="text-white p-8">Registration Coming Soon</div>} />
+          <Route path="/register" element={<Register />} />
 
-          {/* Secure App Routing Pipeline */}
+          {/* Secure Private Pipeline */}
           <Route element={<ProtectedRoute />}>
             <Route element={<MainLayout />}>
               <Route path="/" element={<Dashboard />} />
@@ -37,13 +37,10 @@ function App() {
               <Route path="/cards" element={<Cards />} />
               <Route path="/beneficiaries" element={<Beneficiaries />} />
               <Route path="/settings" element={<Settings />} />
-              {/* Public Auth Routes */}
-<Route path="/login" element={<Login />} />
-<Route path="/register" element={<Register />} />
             </Route>
           </Route>
 
-          {/* Catch-all Fallback */}
+          {/* Catch-all Wildcard Redirection */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
